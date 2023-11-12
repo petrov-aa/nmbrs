@@ -1,11 +1,11 @@
-FROM python:3.8-alpine
+FROM python:3.8
 
 WORKDIR /app
 
-RUN apk add make automake gcc g++ subversion python3-dev
-
-COPY . /app
+COPY requirements.txt /app
 
 RUN pip --no-cache-dir install -r requirements.txt
+
+COPY . /app
 
 RUN python server.py
