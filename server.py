@@ -9,9 +9,17 @@ CORS(app)  # Включаем CORS для всего приложения
 model = keras.saving.load_model('model.keras')
 
 
+def get_scheme_and_host():
+    scheme = request.headers.get('X-Forwarded-Proto', request.scheme)
+    host = request.headers.get('X-Forwarded-Host', request.host)
+
+    return scheme, host
+
+
 @app.route('/', methods=['GET'])
 def index():
-    return render_template('index.html', host='localhost:8000')
+    scheme, host = get_scheme_and_host()
+    return render_template('index.html', host=f'{scheme}://{host}')
 
 
 @app.route('/predict', methods=['POST'])

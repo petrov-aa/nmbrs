@@ -22,6 +22,9 @@
     canvas {
       border: 2px solid gray;
       margin-top: 10px; /* Увеличенное расстояние между холстом и текстом */
+      max-width: 325px; /* Ограничение максимальной ширины холста */
+      max-height: 325px; /* Ограничение максимальной высоты холста */
+      width: 100%; /* Заполнение 100% ширины родительского контейнера */
     }
 
     #drawCanvas {
@@ -47,8 +50,8 @@
 
     #githubLink {
       position: absolute; /* Абсолютное позиционирование */
-      top: 10px; /* Отступ сверху */
-      right: 10px; /* Отступ справа */
+      top: 20px; /* Отступ сверху */
+      right: 20px; /* Отступ справа */
       width: 40px; /* Ширина изображения */
       height: 40px; /* Высота изображения */
     }
@@ -58,7 +61,7 @@
   <a href="https://github.com/petrov-aa/nmbrs" target="_blank">
     <img id="githubLink" src="{{ url_for('static', filename='github-mark-white.png') }}" alt="GitHub Repository">
   </a>
-  <canvas id="drawCanvas" width="400" height="400"></canvas>
+  <canvas id="drawCanvas" width="325" height="325"></canvas>
   <p id="resultText">Нарисуйте цифру от 0 до 9.</p>
   <button id="clearButton" onclick="clearCanvas()">Очистить</button>
 
@@ -140,7 +143,7 @@
         const jsonData = JSON.stringify(flattenedData);
 
         // Replace the following URL with your backend endpoint
-        const backendURL = '//{{ host }}/predict';
+        const backendURL = '{{ host }}/predict';
 
         // Example Ajax request using fetch
         fetch(backendURL, {
