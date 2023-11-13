@@ -16,10 +16,12 @@
       height: 100vh;
       font-family: 'Arial', sans-serif; /* Шрифт без засечек */
       color: white;
+      position: relative; /* Добавлено позиционирование для правильного размещения логотипа */
     }
 
     canvas {
       border: 2px solid gray;
+      margin-top: 10px; /* Увеличенное расстояние между холстом и текстом */
     }
 
     #drawCanvas {
@@ -29,12 +31,36 @@
     p {
       font-size: 24px; /* Увеличенный размер шрифта */
       margin-top: 20px;
+      position: relative; /* Позиционируем относительно */
+    }
+
+    #clearButton {
+      margin-top: 0; /* Убран верхний отступ */
+      padding: 15px; /* Увеличенные размеры кнопки */
+      background-color: gray;
+      color: white;
+      cursor: pointer;
+      border: none;
+      border-radius: 10px; /* Закругленные края */
+      font-size: 24px; /* Размер шрифта кнопки */
+    }
+
+    #githubLink {
+      position: absolute; /* Абсолютное позиционирование */
+      top: 10px; /* Отступ сверху */
+      right: 10px; /* Отступ справа */
+      width: 40px; /* Ширина изображения */
+      height: 40px; /* Высота изображения */
     }
   </style>
 </head>
 <body>
+  <a href="https://github.com/petrov-aa/nmbrs" target="_blank">
+    <img id="githubLink" src="{{ url_for('static', filename='github-mark-white.png') }}" alt="GitHub Repository">
+  </a>
   <canvas id="drawCanvas" width="400" height="400"></canvas>
   <p id="resultText">Нарисуйте цифру от 0 до 9.</p>
+  <button id="clearButton" onclick="clearCanvas()">Очистить</button>
 
   <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -44,7 +70,7 @@
       // Set initial styles
       ctx.fillStyle = 'white';
       ctx.strokeStyle = 'white';
-      ctx.lineWidth = 16;
+      ctx.lineWidth = 30; // Изменена толщина линии
 
       let isDrawing = false;
 
@@ -114,7 +140,7 @@
         const jsonData = JSON.stringify(flattenedData);
 
         // Replace the following URL with your backend endpoint
-        const backendURL = 'http://localhost:5000/predict';
+        const backendURL = '//{{ host }}/predict';
 
         // Example Ajax request using fetch
         fetch(backendURL, {
@@ -177,6 +203,15 @@
         resultText.textContent = `Я думаю, что ты нарисовал: ${number}`;
       }
     });
+
+    // Function to clear the canvas
+    function clearCanvas() {
+      const canvas = document.getElementById('drawCanvas');
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const resultText = document.getElementById('resultText');
+      resultText.textContent = 'Нарисуйте цифру от 0 до 9.';
+    }
   </script>
 </body>
 </html>
