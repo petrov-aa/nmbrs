@@ -3,28 +3,52 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Браузерная рисовалка</title>
+  <title>Draw a number!</title> <!-- Изменен title -->
   <style>
     body {
       margin: 0;
       overflow: hidden;
       background-color: #222; /* Потемнее фон */
+      font-family: 'Arial', sans-serif; /* Шрифт без засечек */
+      color: white;
+    }
+
+    #githubLink {
+      position: absolute; /* Абсолютное позиционирование */
+      top: 20px; /* Отступ сверху */
+      right: 20px; /* Отступ справа */
+      width: 40px; /* Ширина изображения */
+      height: 40px; /* Высота изображения */
+    }
+
+    @media screen and (max-width: 475px) and (max-height: 605px) {
+      #githubLink {
+        top: 15px; /* Уменьшенный отступ сверху */
+        right: 23px; /* Уменьшенный отступ справа */
+        width: 20px; /* Уменьшенная ширина изображения */
+        height: 20px; /* Уменьшенная высота изображения */
+      }
+    }
+
+    #container {
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      height: 100vh;
-      font-family: 'Arial', sans-serif; /* Шрифт без засечек */
-      color: white;
-      position: relative; /* Добавлено позиционирование для правильного размещения логотипа */
+      position: absolute; /* Абсолютное позиционирование */
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 375px; /* Ширина контейнера */
+      padding: 20px 0; /* Отступ сверху и снизу */
     }
 
     canvas {
       border: 2px solid gray;
-      margin-top: 10px; /* Увеличенное расстояние между холстом и текстом */
+      margin-top: 0; /* Убран отступ сверху */
+      padding-top: 0; /* Убран padding сверху */
       max-width: 325px; /* Ограничение максимальной ширины холста */
       max-height: 325px; /* Ограничение максимальной высоты холста */
-      width: 100%; /* Заполнение 100% ширины родительского контейнера */
     }
 
     #drawCanvas {
@@ -48,12 +72,11 @@
       font-size: 24px; /* Размер шрифта кнопки */
     }
 
-    #githubLink {
-      position: absolute; /* Абсолютное позиционирование */
-      top: 20px; /* Отступ сверху */
-      right: 20px; /* Отступ справа */
-      width: 40px; /* Ширина изображения */
-      height: 40px; /* Высота изображения */
+    @media screen and (max-width: 475px) {
+      #clearButton {
+        padding: 10px; /* Уменьшенный padding */
+        font-size: 20px; /* Уменьшенный размер шрифта */
+      }
     }
   </style>
 </head>
@@ -61,9 +84,11 @@
   <a href="https://github.com/petrov-aa/nmbrs" target="_blank">
     <img id="githubLink" src="{{ url_for('static', filename='github-mark-white.png') }}" alt="GitHub Repository">
   </a>
-  <canvas id="drawCanvas" width="325" height="325"></canvas>
-  <p id="resultText">Нарисуйте цифру от 0 до 9.</p>
-  <button id="clearButton" onclick="clearCanvas()">Очистить</button>
+  <div id="container">
+    <canvas id="drawCanvas" width="325" height="325"></canvas>
+    <p id="resultText">Нарисуйте цифру от 0 до 9.</p>
+    <button id="clearButton" onclick="clearCanvas()">Очистить</button>
+  </div>
 
   <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -81,16 +106,20 @@
       function draw(e) {
         if (!isDrawing) return;
 
+        const rect = canvas.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
 
-        ctx.lineTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
+        ctx.lineTo(x, y);
         ctx.stroke();
         ctx.beginPath();
-        ctx.arc(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop, ctx.lineWidth / 2, 0, Math.PI * 2);
+        ctx.arc(x, y, ctx.lineWidth / 2, 0, Math.PI * 2);
         ctx.fill();
         ctx.beginPath();
-        ctx.moveTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
+        ctx.moveTo(x, y);
       }
 
       // Event listeners for drawing
@@ -120,11 +149,19 @@
       canvas.addEventListener('touchstart', (e) => {
         isDrawing = true;
         ctx.beginPath();
-        draw(e.touches[0]);
+        const touch = e.touches[0];
+        draw({
+          clientX: touch.clientX,
+          clientY: touch.clientY
+        });
       });
 
       canvas.addEventListener('touchmove', (e) => {
-        draw(e.touches[0]);
+        const touch = e.touches[0];
+        draw({
+          clientX: touch.clientX,
+          clientY: touch.clientY
+        });
         e.preventDefault();
       });
 
